@@ -1,4 +1,15 @@
 ---
+# postgres-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+stringData:
+  POSTGRES_DB: gitlab_db
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: secret
+---
 # postgres-storage.yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -57,13 +68,9 @@ spec:
         ports:
         - containerPort: 5432
           name: postgres
-        env:
-        - name: POSTGRES_DB
-          value: gitlab_db
-        - name: POSTGRES_USER
-          value: admin
-        - name: POSTGRES_PASSWORD
-          value: "secret"
+        envFrom:
+        - secretRef:
+            name: postgres-secret
         resources:
           limits:
             memory: "256Mi"
